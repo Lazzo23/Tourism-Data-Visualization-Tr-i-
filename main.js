@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', function () {
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+  // Statistics
+  const statistics = document.getElementById("statistics");
+
   // Prepare data for visualization
   function prepareData(data) {
     const headers = Object.values(data).toString().split(";");
@@ -37,6 +40,22 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       return result;
     }, []);
+  }
+
+  // Calculate basic statistics
+  function calculateStatistics(Data, country) {
+    const countryData = Data.filter(d => d.country==country)
+    var allNights = countryData.reduce((accumulator, d) => accumulator + d.nights, 0);
+    var allArrivals = countryData.reduce((accumulator, d) => accumulator + d.arrivals, 0);
+    var avgNights = Math.round(allNights / allArrivals);
+    var bestMonth = countryData.reduce(function(prev, current) {
+      return (prev && prev.nights > current.nights) ? prev : current
+    }); 
+    statistics.innerHTML = 
+    "<b>Skupno število prenočitev</b>: " + allNights + "<br>" +
+    "<b>Skupno število turistov</b>: " + allArrivals + "\<br>" +
+    "<b>Povprečno število prespanih noči</b>: " + avgNights + "<br>" +
+    "<b>Najboljši mesec</b>: " + bestMonth.month + " (" + bestMonth.nights + " prenočitev)";
   }
     
   // Read data from .csv file
@@ -119,12 +138,15 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("stroke", "rgb(0, 153, 51)")
       .style("stroke-width", 3)
       .style("fill", "none");
+      
+    // Calculate basic statistics
+    calculateStatistics(Data, allGroups[0]);
 
     // A function that updates the chart
-    function update(selectedGroup) {
+    function update(selectedCountry) {
 
       // Create new data with the selection
-      var dataFilter = Data.filter(function(d){return d.country==selectedGroup})
+      var dataFilter = Data.filter(function(d){return d.country==selectedCountry})
 
       // Give these new data to update line
       lineNights
@@ -136,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
           .y(function(d) { return y(+d.nights) })
         )
         .attr("stroke", "rgb(77, 255, 136)");
+
         
       lineArrivals
         .datum(dataFilter)
@@ -146,12 +169,14 @@ document.addEventListener('DOMContentLoaded', function () {
           .y(function(d) { return y(+d.arrivals) })
         )
         .attr("stroke", "rgb(0, 153, 51)");
+
+      calculateStatistics(Data, selectedCountry);
     }
 
     // Run the updateChart function with this selected option
     d3.select("#selectCountry").on("change", function(d) {
-        var selectedOption = d3.select(this).property("value")
-        update(selectedOption)
+        var selectedCountry = d3.select(this).property("value")
+        update(selectedCountry)
     })
   });
 });

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Preberi podatke iz API-ja</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div id="result"></div>
+
+    <script>
+        // URL do API-ja, ki ga želite uporabiti
+        const url = 'https://pxweb.stat.si:443/SiStatData/api/v1/sl/Data/2164466S.px'; // Zamenjajte z dejanskim URL-jem API-ja
+
+        // Podatki, ki jih želite poslati preko POST zahteve
+        const requestData = {
+            "query": [
+                {
+                "code": "OBČINE",
+                "selection": {
+                    "filter": "item",
+                    "values": [
+                    "131"
+                    ]
+                }
+                }
+            ],
+            "response": {
+                "format": "csv"
+            }
+        }
+        
+
+        // Nastavitev POST zahteve
+        fetch(url, {
+            method: "POST",
+            body: JSON.stringify(requestData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Tu lahko obdelate podatke in prikažete na zaslonu
+                const resultElement = document.getElementById('result');
+                resultElement.textContent = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error('Napaka pri pridobivanju podatkov iz API-ja:', error);
+            });
+    </script>
+</body>
+</html>
+
+<script>
+    function processFile(){
+var file = document.querySelector('#myFile').files[0];
+var reader = new FileReader();
+reader.readAsText(file);
+
+//if you need to read a csv file with a 'ISO-8859-1' encoding
+/*reader.readAsText(file,'ISO-8859-1');*/
+
+//When the file finish load
+reader.onload = function(event) {
+
+//get the file.
+var csv = event.target.result;
+
+//split and get the rows in an array
+var rows = csv.split('\n');
+
+//move line by line
+for (var i = 0; i < rows.length; i++) {
+  //split by separator (,) and get the columns
+  cols = rows[i].split(',');
+
+  //move column by column
+  for (var j = 0; j < cols.length; j++) {
+    /*the value of the current column.
+    Do whatever you want with the value*/
+    var value = cols[j];
+    console.log(value);
+  }
+}
+}
+}
+
+/*
+   async function getKeys(url) {
+    let keys;
+    const res = await fetch(url);
+    keys = await res.json();
+    return keys;
+   }
+
+   async function getData(url) {
+    let data;
+    const requestData = {"query": [{"code": "OBČINE", "selection": {"filter": "item", "values": ["131"]}}], "response": {"format": "json"}}
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(requestData)
+    });
+    data = await res.json();
+    return data;
+   }
+   
+   const url = "https://pxweb.stat.si:443/SiStatData/api/v1/sl/Data/2164466S.px";
+
+   let keys = getKeys(url);
+   let data = getData(url);
+
+    function getX(url) {
+      const requestData = {"query": [{"code": "OBČINE", "selection": {"filter": "item", "values": ["131"]}}], "response": {"format": "json"}}
+      fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(requestData)
+      })
+      .then(response => response.json())
+      .then(data => {
+          return JSON.stringify(data);
+      })
+      .catch(error => {
+          console.error('Napaka pri pridobivanju podatkov iz API-ja:', error);
+      });
+   }
+   */
+
+   const url = "https://pxweb.stat.si:443/SiStatData/api/v1/sl/Data/2164466S.px";
+    let requestData = {
+    "query": [{
+      "code": "OBČINE", 
+        "selection": {"filter": "item", "values": ["131"]}
+      }], 
+    "response": {"format": "json"}
+  };
+    let fetchData = {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(requestData)
+    }
+    
+    /*
+    async function getData (url, fetchData) {
+      let response = await fetch(url, fetchData)
+      return response
+    }*/
+
+    var yourTodos = fetch(url, fetchData)
+    .then(res => res.json())
+    .then(data => {
+
+      return JSON.stringify(data);
+    });
+
+    console.log(yourTodos);
+</script>
+

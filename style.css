@@ -1,7 +1,11 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Rubik';
     margin: 0;
     padding: 0;
+}
+
+#selectCountry {
+    font-family: 'Rubik';
 }
 
 .container {

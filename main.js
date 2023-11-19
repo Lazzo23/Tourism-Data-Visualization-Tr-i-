@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const countryData = Data.filter(d => d.country==country)
     var allNights = countryData.reduce((accumulator, d) => accumulator + d.nights, 0);
     var allArrivals = countryData.reduce((accumulator, d) => accumulator + d.arrivals, 0);
-    var avgNights = Math.round(allNights / allArrivals);
+    var avgNights = Math.round((allNights / allArrivals) * 100) / 100;
     var bestMonth = countryData.reduce(function(prev, current) {
       return (prev && prev.nights > current.nights) ? prev : current
     }); 
@@ -127,6 +127,53 @@ document.addEventListener('DOMContentLoaded', function () {
       .style("stroke-width", 3)
       .style("fill", "none");
 
+
+
+    // Dodajanje krogcev za vsako odčitano vrednost
+    var circlesNights = svg.selectAll(".dot")
+    .data(Data.filter(function(d) { return d.country == allGroups[0]; }))
+    .enter().append("circle")
+    .attr("class", "dot")
+    .attr("cx", function(d) { return x(d.month); })
+    .attr("cy", function(d) { return y(+d.nights); })
+    .attr("r", 5) // Velikost kroga
+    .attr("fill", "rgb(77, 255, 136)")
+    .attr("stroke", "white")
+    .attr("stroke-width", 0)
+    .on("mouseover", function(d) {
+      tooltip.text(d.month + ": " + d.nights + " prenočitev, " + d.arrivals + " turistov")
+            .style("visibility", "visible");
+      d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("r", 10); // Velikost kroga ob hoverju
+        // Prikaži informacije na hover
+        d3.select(this).style("cursor", "pointer");
+    })
+    .on("mouseout", function() {
+      tooltip.style("visibility", "hidden");
+      d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("r", 5);
+    });
+
+          // Dodajanje besedila
+var tooltip = svg.append("text")
+.style("visibility", "hidden")
+.style("font-size", "12px")
+.style("fill", "black")
+.style("pointer-events", "none")
+.style("background-color", "black")
+.attr("text-anchor", "middle");
+
+// Posodobitev besedila in položaja ob spremembi položaja miške
+svg.on("mousemove", function() {
+  var coordinates = d3.mouse(this);
+  tooltip.attr("x", coordinates[0])
+      .attr("y", coordinates[1] - 15);
+});
+
     var lineArrivals = svg
       .append('g')
       .append("path")
@@ -138,6 +185,8 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("stroke", "rgb(0, 153, 51)")
       .style("stroke-width", 3)
       .style("fill", "none");
+
+    
       
     // Calculate basic statistics
     calculateStatistics(Data, allGroups[0]);
@@ -159,6 +208,13 @@ document.addEventListener('DOMContentLoaded', function () {
         )
         .attr("stroke", "rgb(77, 255, 136)");
 
+      // Posodobi položaj krogcev
+      circlesNights.data(dataFilter)
+        .transition()
+        .duration(500)
+        .attr("cx", function(d) { return x(d.month); })
+        .attr("cy", function(d) { return y(+d.nights); });
+
         
       lineArrivals
         .datum(dataFilter)
@@ -169,6 +225,12 @@ document.addEventListener('DOMContentLoaded', function () {
           .y(function(d) { return y(+d.arrivals) })
         )
         .attr("stroke", "rgb(0, 153, 51)");
+
+      circlesArrivals.data(dataFilter)
+        .transition()
+        .duration(500)
+        .attr("cx", function(d) { return x(d.month); })
+        .attr("cy", function(d) { return y(+d.nights); });
 
       calculateStatistics(Data, selectedCountry);
     }

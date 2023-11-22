@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
 
   // Line chart dimensions and margins
-  var margin = {top: 10, right: 30, bottom: 30, left: 60},
+  var margin = {top: 30, right: 100, bottom: 30, left: 100},
   width = 1100 - margin.left - margin.right,
   height = 800 - margin.top - margin.bottom;
   
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
     statistics.innerHTML = 
     "<b>Skupno število prenočitev</b>: " + allNights + "<br>" +
     "<b>Skupno število turistov</b>: " + allArrivals + "\<br>" +
-    "<b>Povprečno število prespanih noči</b>: " + avgNights + "<br>" +
+    "<b>Povprečno število prenočitev na turista</b>: " + avgNights + "<br>" +
     "<b>Najboljši mesec</b>: " + bestMonth.month + " (" + bestMonth.nights + " prenočitev)";
   }
     
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return i % Math.ceil(x.domain().length / 8) === 0; })));
     svg.append("text")             
-      .attr("transform", "translate(" + (width/2 - 20) + " ," + (height + margin.top + 20) + ")")
+      .attr("transform", "translate(" + (width/2 - 20) + " ," + (height + margin.top ) + ")")
       .style("text-anchor", "middle")
       .text("Čas");
 
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .call(d3.axisLeft(y));
     svg.append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", 0 - margin.left)
+      .attr("y", 0 - margin.left + 50)
       .attr("x",0 - (height / 2))
       .attr("dy", "1em")
       .style("text-anchor", "middle")
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("class","lineLegend")
       .attr("transform", function (d,i) {return "translate(" + (margin.left) + "," + (i*20)+")";});
     lineLegend.append("text").text(function (d) {return d;})
-      .attr("transform", "translate(15, 6)"); //align texts with boxes
+      .attr("transform", "translate(15, 6)");
     lineLegend.append("rect")
       .attr("fill", d => colDict[d])
       .attr("width", 12).attr('height', 5);
@@ -127,52 +127,49 @@ document.addEventListener('DOMContentLoaded', function () {
       .style("stroke-width", 3)
       .style("fill", "none");
 
-
-
-    // Dodajanje krogcev za vsako odčitano vrednost
+    // Adding circles
     var circlesNights = svg.selectAll(".dot")
-    .data(Data.filter(function(d) { return d.country == allGroups[0]; }))
-    .enter().append("circle")
-    .attr("class", "dot")
-    .attr("cx", function(d) { return x(d.month); })
-    .attr("cy", function(d) { return y(+d.nights); })
-    .attr("r", 5) // Velikost kroga
-    .attr("fill", "rgb(77, 255, 136)")
-    .attr("stroke", "white")
-    .attr("stroke-width", 0)
-    .on("mouseover", function(d) {
-      tooltip.text(d.month + ": " + d.nights + " prenočitev, " + d.arrivals + " turistov")
-            .style("visibility", "visible");
-      d3.select(this)
-            .transition()
-            .duration(200)
-            .attr("r", 10); // Velikost kroga ob hoverju
-        // Prikaži informacije na hover
-        d3.select(this).style("cursor", "pointer");
-    })
-    .on("mouseout", function() {
-      tooltip.style("visibility", "hidden");
-      d3.select(this)
-            .transition()
-            .duration(200)
-            .attr("r", 5);
+      .data(Data.filter(function(d) { return d.country == allGroups[0]; }))
+      .enter().append("circle")
+      .attr("class", "dot")
+      .attr("cx", function(d) { return x(d.month); })
+      .attr("cy", function(d) { return y(+d.nights); })
+      .attr("r", 5)
+      .attr("fill", "rgb(77, 255, 136)")
+      .attr("stroke", "white")
+      .attr("stroke-width", 0)
+      .on("mouseover", function(d) {
+        tooltip.text(d.month + ": " + d.nights + " prenočitev, " + d.arrivals + " turistov")
+              .style("visibility", "visible");
+        d3.select(this)
+              .transition()
+              .duration(200)
+              .attr("r", 10);
+          d3.select(this).style("cursor", "pointer");
+      })
+      .on("mouseout", function() {
+        tooltip.style("visibility", "hidden");
+        d3.select(this)
+              .transition()
+              .duration(200)
+              .attr("r", 5);
+      });
+
+    // Text adding
+    var tooltip = svg.append("text")
+      .style("visibility", "hidden")
+      .style("font-size", "12px")
+      .style("fill", "black")
+      .style("pointer-events", "none")
+      .style("background-color", "black")
+      .attr("text-anchor", "middle");
+
+    // Update text based on mouse movement
+    svg.on("mousemove", function() {
+      var coordinates = d3.mouse(this);
+      tooltip.attr("x", coordinates[0])
+          .attr("y", coordinates[1] - 15);
     });
-
-          // Dodajanje besedila
-var tooltip = svg.append("text")
-.style("visibility", "hidden")
-.style("font-size", "12px")
-.style("fill", "black")
-.style("pointer-events", "none")
-.style("background-color", "black")
-.attr("text-anchor", "middle");
-
-// Posodobitev besedila in položaja ob spremembi položaja miške
-svg.on("mousemove", function() {
-  var coordinates = d3.mouse(this);
-  tooltip.attr("x", coordinates[0])
-      .attr("y", coordinates[1] - 15);
-});
 
     var lineArrivals = svg
       .append('g')
@@ -185,8 +182,6 @@ svg.on("mousemove", function() {
       .attr("stroke", "rgb(0, 153, 51)")
       .style("stroke-width", 3)
       .style("fill", "none");
-
-    
       
     // Calculate basic statistics
     calculateStatistics(Data, allGroups[0]);
@@ -225,12 +220,6 @@ svg.on("mousemove", function() {
           .y(function(d) { return y(+d.arrivals) })
         )
         .attr("stroke", "rgb(0, 153, 51)");
-
-      circlesArrivals.data(dataFilter)
-        .transition()
-        .duration(500)
-        .attr("cx", function(d) { return x(d.month); })
-        .attr("cy", function(d) { return y(+d.nights); });
 
       calculateStatistics(Data, selectedCountry);
     }

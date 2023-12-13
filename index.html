@@ -3,109 +3,30 @@
 <head>
   <meta charset="utf-8">
   <title>Vizualizacija</title>
+  <script src="main.js" defer></script>
   <script src="https://d3js.org/d3.v4.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet'>
 </head>
 <body>
-  <div id="scatter">
+  <div class="container">
+    <nav class="navigation">
+      <h1>42rizem<span style="font-size:16px; font-weight: normal;"> Miha Lazić, Matija Bajt</span>
+      </h1>
+      
+      <p>Vizualizacija števila prenočitev turistov iz posamezne države v Občini Tržič.</p>
+      <hr>
+      <ul>
+        <li>Izberite državo:
+          <select id="selectCountry" style="width: 100%; font-size: 16px; margin-top: 10px;"></select>
+        </li>
+      </ul>
+      <p id="statistics"></p>
+    </nav>
+    <div class="main-content">
+      <div id="line-chart"></div>
+    </div>
   </div>
-
-  <script>
-    function prepareData(keys, values) {
-      var countries = [];
-      var arrivals = [];
-      var nights = [];
-
-      for (var i = 0; i < values.length; i++) {
-        // ali je število
-        if (!isNaN(values[i])) {
-            if (i % 2 === 0) { // prihodi
-              countries.push(keys[i].replace(' Prihodi turistov','').slice(keys[i].indexOf(' ')));
-              arrivals.push(parseInt(values[i]));
-            } else { // prenocitve
-              nights.push(parseInt(values[i]));
-            }
-        }
-      }
-      return [countries, arrivals, nights];
-    }
-
-
-    const url = "https://raw.githubusercontent.com/Lazzo23/Tourist-Visualization/main/data.csv";
-
-    d3.csv(url, function(data) {
-      let keys = Object.values(data).toString().split(";");
-      let values = Object.values(data[42]).toString().split(";");
-      /*
-
-      Že sešteti podatki za analizo
-      var allTourists = parseInt(values[2]);
-      var allNights = parseInt(values[3]);
-      var allLocalTourists = parseInt(values[4]);
-      var allLocalNights = parseInt(values[5]);
-      var allForeignerTourists = parseInt(values[6]);
-      var allForeignerNights = parseInt(values[7]);
-      
-      */
-      keys = keys.slice(8);
-      values = values.slice(8);
-      
-      Data = prepareData(keys, values);
-
-      let coords = Data[2].map(function (ele, i) {return [ele, Data[1][i]];});
-
-
-      var coords2 = [];
-      for (var i = 0; i < Data[1].length; i++) {
-        var obj = {
-            arrivals: Data[1][i],
-            nights: Data[2][i]
-        };
-
-        coords2.push(obj);
-    }
-    console.log(Data);
-
-    
-
-    // set the dimensions and margins of the graph
-var margin = {top: 10, right: 30, bottom: 30, left: 60},
-    width = 460 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
-
-// append the svg object to the body of the page
-var svg = d3.select("#scatter")
-  .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
-  // Add X axis
-  var x = d3.scaleLinear()
-    .domain([0, 200])
-    .range([ 0, width ]);
-  svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x));
-
-  // Add Y axis
-  var y = d3.scaleLinear()
-    .domain([0, 300])
-    .range([ height, 0]);
-  svg.append("g")
-    .call(d3.axisLeft(y));
-
-  // Add dots
-  svg.append('g')
-    .selectAll("dot")
-    .data(coords2)
-    .enter()
-    .append("circle")
-      .attr("cx", function (d) { return x(d.nights); } )
-      .attr("cy", function (d) { return y(d.arrivals); } )
-      .attr("r", 5)
-      .style("fill", "red")
-    });
-  </script>
 </body>
 </html>

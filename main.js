@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("x",0 - (height / 2))
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .text("Število turistov");    
+      .text("Število prenočitev in turistov");    
 
     // Legend
     var legend_keys = ["Prenočitve", "Prihodi"]
@@ -145,7 +145,6 @@ document.addEventListener('DOMContentLoaded', function () {
               .transition()
               .duration(200)
               .attr("r", 10);
-          d3.select(this).style("cursor", "pointer");
       })
       .on("mouseout", function() {
         tooltip.style("visibility", "hidden");

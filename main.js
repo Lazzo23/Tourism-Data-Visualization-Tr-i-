@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
     
   // Read data from .csv file
-  const url = "https://raw.githubusercontent.com/Lazzo23/Tourist-Visualization/main/data.csv";
+  const url = "https://raw.githubusercontent.com/Lazzo23/Tourism-Data-Visualization-Trzic/main/data/touristData.csv";
   d3.csv(url, function(data) {
 
     let Data = prepareData(data);

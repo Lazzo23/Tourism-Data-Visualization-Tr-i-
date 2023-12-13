@@ -12,18 +12,31 @@
 <body>
   <div class="container">
     <nav class="navigation">
-      <h1>42rizem<span style="font-size:16px; font-weight: normal;"> Miha Lazić, Matija Bajt</span>
-      </h1>
-      
-      <p>Vizualizacija števila prenočitev turistov iz posamezne države v Občini Tržič.</p>
-      <hr>
-      <ul>
-        <li>Izberite državo:
-          <select id="selectCountry" style="width: 100%; font-size: 16px; margin-top: 10px;"></select>
-        </li>
-      </ul>
-      <p id="statistics"></p>
+      <div id="title">
+        <h1>42rizem<span style="font-size:16px; font-weight: normal;"> Miha Lazić, Matija Bajt</span>
+        </h1>
+        
+        <p>Vizualizacija števila prenočitev turistov iz posamezne države v Občini Tržič.</p>
+      </div>
+      <div id="touristNavigation">
+        <h2>Turizem</h2>
+        <ul>
+          <li>Izberite državo:
+            <select id="selectCountry" style="width: 100%; font-size: 16px; margin-top: 10px;"></select>
+          </li>
+        </ul>
+        <p id="statistics"></p>
+      </div>
+      <div id="weatherNavigation">
+        <h2>Vreme</h2>
+        <ul>
+          <li>Izberite vremenske podatke:
+            <select id="selectWeatherData" style="width: 100%; font-size: 16px; margin-top: 10px;"></select>
+          </li>
+        </ul>
+      </div>
     </nav>
+    
     <div class="main-content">
       <div id="line-chart"></div>
     </div>

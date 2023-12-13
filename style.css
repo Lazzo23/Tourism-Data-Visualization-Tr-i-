@@ -8,6 +8,10 @@ body {
     font-family: 'Rubik';
 }
 
+#selectWeatherData {
+    font-family: 'Rubik';
+}
+
 .container {
     display: flex;
     justify-content: center;
@@ -16,10 +20,25 @@ body {
 }
 
 .navigation {
-    width: 20%; /* Nastavi širino navigacije */
+    width: 20%;
+    
+}
+
+#title {
     background-color: #f0f0f0;
     padding: 20px;
 }
+
+#touristNavigation {
+    background-color: rgba(90, 170, 78, 0.5);
+    padding: 20px;
+}
+
+#weatherNavigation {
+    background-color: rgb(102, 179, 204, 0.5);
+    padding: 20px;
+}
+
 
 .navigation ul {
     list-style-type: none;

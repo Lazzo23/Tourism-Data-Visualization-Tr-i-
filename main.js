@@ -2,13 +2,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Colours
     var colorNights = "rgb(90, 170, 78)";
     var colorArrivals = "rgb(6, 102, 89)";
-    var colorBars = "rgb(102, 179, 204, 0.5)";
-    var colorSelectedBar = "rgb(102, 179, 204, 1)";
+    var colorBars = "rgb(102, 179, 204, 0.3)";
+    var colorSelectedBar = "rgb(102, 179, 204, 0.5)";
 
     // Line chart dimensions and margins
     var margin = {top: 30, right: 100, bottom: 30, left: 100};
-    var width = 1100 - margin.left - margin.right;
-    var height = 800 - margin.top - margin.bottom;
+    var width = 1150 - margin.left - margin.right;
+    var height = 620 - margin.top - margin.bottom;
     
     // Append the svg object to the body of the page
     var svg = d3.select("#line-chart")
@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Statistics
     const statistics = document.getElementById("statistics");
+    const weatherStatistics = document.getElementById("weatherStatistics");
 
     // Prepare data for visualization
     function prepareData(data) {
@@ -68,6 +69,22 @@ document.addEventListener('DOMContentLoaded', function () {
         "<b>Povprečno število prenočitev na turista</b>: " + avgNights + "<br>" +
         "<b>Najboljši mesec</b>: " + bestMonth.month + " (" + bestMonth.nights + " prenočitev)";
     }
+
+    // Calculate basic statistics
+    function calculateWeatherStatistics(weatherData, type) {
+        const typeWeather = weatherData.map(o => o[type]);
+        var max = Math.max(...typeWeather);
+        var min = Math.min(...typeWeather);
+        var sum = typeWeather.reduce((a, b) => a + b, 0);
+        sum = Math.round(sum * 100) / 100
+        var avg = sum / typeWeather.length;
+        avg = Math.round(avg * 100) / 100
+        weatherStatistics.innerHTML = 
+        "<b>Skupno število</b>: " + sum + "<br>" +
+        "<b>Povprečje</b>: " + avg + "<br>" +
+        "<b>Največjo vrednost</b>: " + max + "\<br>" +
+        "<b>Najmanjša vrednost</b>: " + min + "<br>";
+    }
     
     // Read data from .csv file
     const urlTouristData = "https://raw.githubusercontent.com/Lazzo23/Tourism-Data-Visualization-Trzic/main/data/touristData.csv";
@@ -81,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             prepareWeatherData(weatherData);
             var listOfWeatherData = Object.keys(weatherData[0]).slice(3);
+            listOfCountries.splice(3, listOfCountries.length - 3, ...listOfCountries.slice(3, listOfCountries.length).sort());
             
             // Add countries to the button
             d3.select("#selectCountryData")
@@ -88,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .data(listOfCountries)
                 .enter()
                 .append('option')
-                .text(function (d) { return d; })           // text showed in the menu
+                .text(function (d) { if(d == "Država - SKUPAJ") return "SKUPAJ"; else return d;})           // text showed in the menu
                 .attr("value", function (d) { return d; })  // corresponding value returned by the button
 
             // Add weather data to the button
@@ -156,24 +174,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 .enter()
                 .append("rect")
                 .attr("class", "barWeather")
-                .attr("x", function(d) { return x(d["valid"]) + x.bandwidth() / 2; })
+                .attr("x", function(d) { return x(d["valid"])})
                 .attr("y", function(d) { return yWeather(d[listOfWeatherData[0]]); })
-                .attr("width", x.bandwidth() * 0.6)  // Prilagodite glede na želeno širino stolpcev
+                .attr("width", x.bandwidth() * 0.9)  // Prilagodite glede na želeno širino stolpcev
                 .attr("height", function(d) { return height - yWeather(d[listOfWeatherData[0]]); })
                 .attr("fill", colorBars)
                 .on("mouseover", function(d) {
                     tooltip.text(d[listOfWeatherData[0]])
                             .style("visibility", "visible");
                     d3.select(this)
-                            .transition()
-                            .duration(200)
                             .attr("fill", colorSelectedBar);
                     })
                     .on("mouseout", function() {
                     tooltip.style("visibility", "hidden");
                     d3.select(this)
-                            .transition()
-                            .duration(200)
                             .attr("fill", colorBars);
                     });
 
@@ -184,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .append("path")
                 .datum(Data.filter(function(d){return d.country==listOfCountries[0]}))
                 .attr("d", d3.line()
-                .x(function(d) { return x(d.month) })
+                .x(function(d) { return x(d.month) + x.bandwidth() / 2 })
                 .y(function(d) { return y(+d.nights) })
                 )
                 .attr("stroke", colorNights)
@@ -196,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .data(Data.filter(function(d) { return d.country == listOfCountries[0]; }))
                 .enter().append("circle")
                 .attr("class", "dot")
-                .attr("cx", function(d) { return x(d.month); })
+                .attr("cx", function(d) { return x(d.month) + x.bandwidth() / 2  })
                 .attr("cy", function(d) { return y(+d.nights); })
                 .attr("r", 7)
                 .attr("fill", colorNights)
@@ -239,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .append("path")
                 .datum(Data.filter(function(d){return d.country==listOfCountries[0]}))
                 .attr("d", d3.line()
-                .x(function(d) { return x(d.month) })
+                .x(function(d) { return x(d.month) + x.bandwidth() / 2  })
                 .y(function(d) { return y(+d.arrivals) })
                 )
                 .attr("stroke", colorArrivals)
@@ -248,6 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 
             // Calculate basic statistics
             calculateStatistics(Data, listOfCountries[0]);
+            calculateWeatherStatistics(weatherData, listOfWeatherData[0]);
 
             // Legend
             var legend_keys = ["Prenočitve", "Prihodi", "Vremenski podatki"]
@@ -276,21 +291,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 lineNights.datum(dataFilter)
                     .transition()
                     .duration(500)
-                    .attr("d", d3.line().x(function(d) { return x(d.month) }).y(function(d) { return y(+d.nights) }))
+                    .attr("d", d3.line()
+                    .x(function(d) { return x(d.month) + x.bandwidth() / 2  })
+                    .y(function(d) { return y(+d.nights) }))
                     .attr("stroke", colorNights);
         
                 // Update circles
                 circlesNights.data(dataFilter)
                     .transition()
                     .duration(500)
-                    .attr("cx", function(d) { return x(d.month); })
-                    .attr("cy", function(d) { return y(+d.nights); });
+                    .attr("cx", function(d) { return x(d.month) + x.bandwidth() / 2 })
+                    .attr("cy", function(d) { return y(+d.nights) });
         
                 // Update arrivals
                 lineArrivals.datum(dataFilter)
                     .transition()
                     .duration(500)
-                    .attr("d", d3.line().x(function(d) { return x(d.month) }).y(function(d) { return y(+d.arrivals) }))
+                    .attr("d", d3.line()
+                    .x(function(d) { return x(d.month) + x.bandwidth() / 2  })
+                    .y(function(d) { return y(+d.arrivals) }))
                     .attr("stroke", colorArrivals);
 
                 // Update Y axis
@@ -320,22 +339,18 @@ document.addEventListener('DOMContentLoaded', function () {
                         tooltip.text(d.value)
                             .style("visibility", "visible");
                         d3.select(this)
-                            .transition()
-                            .duration(200)
                             .attr("fill", colorSelectedBar);
                     })
                     .on("mouseout", function() {
                         tooltip.style("visibility", "hidden");
                         d3.select(this)
-                            .transition()
-                            .duration(200)
                             .attr("fill", colorBars);
                     })
                     .transition()
                     .duration(500)
-                    .attr("x", function(d) { return x(d.valid) + x.bandwidth() / 2; })
+                    .attr("x", function(d) { return x(d.valid) + x.bandwidth() / 4; })
                     .attr("y", function(d) { return yWeather(+d.value); })
-                    .attr("width", x.bandwidth() * 0.6)
+                    .attr("width", x.bandwidth() * 0.9)
                     .attr("height", function(d) { return height - yWeather(+d.value); })
                     .attr("fill", colorBars);
             
@@ -344,6 +359,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     .transition()
                     .duration(500)
                     .call(d3.axisRight(yWeather));
+
+                calculateWeatherStatistics(weatherData, selectedWeather);
             }
             
 

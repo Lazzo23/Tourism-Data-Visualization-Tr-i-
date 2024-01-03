@@ -12,11 +12,17 @@
 <body>
   <div class="container">
     <nav class="navigation">
-      <div id="title">
-        <h1>42rizem<span style="font-size:16px; font-weight: normal;"> Miha Lazić, Matija Bajt</span>
+      
+      <div id="header">
+        <img id="logo" src="img/logo.png" alt="Logo">
+        <h1 id="title">42rizem
+          <span style="font-size:14px; font-weight: normal;"> Miha Lazić, Matija Bajt</span>
         </h1>
-        <p>Vizualizacija turističnih in vremenskih podatkov o Občini Tržič.</p>
       </div>
+      <div id="subtitle">
+        <span style="font-size:14px;">Vizualizacija turističnih in vremenskih podatkov o Občini Tržič.</span>
+      </div>
+
       <div id="touristNavigation">
         <h2>Turizem</h2>
         <ul>
@@ -27,6 +33,7 @@
         <p id="statistics"></p>
         <small>Vir: Statistični urad Republike Slovenije</small>
       </div>
+
       <div id="weatherNavigation">
         <h2>Vreme</h2>
         <ul>
@@ -41,8 +48,9 @@
     
     <div class="main-content">
       <div id="line-chart"></div>
+      <!--<svg id="pie-chart"></svg>-->
     </div>
+
   </div>
-  <div id="tooltip" style="position: absolute; opacity: 0;"></div>
 </body>
 </html>

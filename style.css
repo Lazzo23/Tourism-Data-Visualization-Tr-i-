@@ -24,19 +24,41 @@ body {
     
 }
 
-#title {
+#logo {
+    width: 50px; 
+    height: auto; 
+    margin-right: 10px;
+}
+
+#header {
     background-color: #f0f0f0;
     padding: 20px;
+    display: flex;
+    align-items: center;
+}
+
+#title {
+    margin: 0;
+    flex: 1;
+}
+
+#subtitle {
+    background-color: #f0f0f0;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
 }
 
 #touristNavigation {
     background-color: rgba(90, 170, 78, 0.5);
     padding: 20px;
+    padding-top:10px;
 }
 
 #weatherNavigation {
     background-color: rgb(102, 179, 204, 0.5);
     padding: 20px;
+    padding-top:10px;
 }
 
 

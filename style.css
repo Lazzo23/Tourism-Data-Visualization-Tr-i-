@@ -16,12 +16,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    height: 100vh; /* Nastavi višino na celotno višino zaslona (viewport height) */
+    width: 100%;
 }
 
 .navigation {
-    width: 20%;
-    
+    width: 16%;
 }
 
 #logo {
@@ -78,10 +77,11 @@ body {
 }
 
 .main-content {
-    width: 60%; /* Nastavi širino glavne vsebine */
+    width: 70%; /* Nastavi širino glavne vsebine */
     padding: 20px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 862px;
 }
 
 #statistics {
@@ -90,4 +90,42 @@ body {
 
 #weatherStatistics {
     line-height: 25px;
+}
+
+#slideshow-container {
+    padding-left: 200px;
+    padding-right: 200px;
+}
+
+.mySlides {
+    margin-top: 50px;
+    font-style: italic;
+    animation: fadeInOut 10s linear ;
+}
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }   10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+.black-border {
+    font-style: italic;
+}
+
+select {
+    border: white;
+}
+
+input[type="radio"]:checked + label{
+    font-weight: bold;
+  }
+input[type="radio"]:checked{
+    accent-color: black;
 }

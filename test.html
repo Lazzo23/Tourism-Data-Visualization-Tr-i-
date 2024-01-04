@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stolpični diagram</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+<script>
+    // Podatki
+    var data = [
+        { country: 'Slovenia', nights: 100 },
+        { country: 'Croatia', nights: 150 },
+        { country: 'Italy', nights: 80 },
+        // Dodajte podatke za druge države
+    ];
+
+    // Velikosti grafa
+    var width = 600;
+    var height = 400;
+
+    // Ustvari SVG element
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    // Skala za os Y (število prenočitev)
+    var yScale = d3.scaleLinear()
+        .domain([0, d3.max(data, (d) => d.nights)])
+        .range([height, 0]);
+
+    // Skala za os X (države)
+    var xScale = d3.scaleBand()
+        .domain(data.map((d) => d.country))
+        .range([0, width])
+        .padding(0.1);
+
+    // Dodajte stolpce
+    svg.selectAll("rect")
+        .data(data)
+        .enter().append("rect")
+        .attr("x", (d) => xScale(d.country))
+        .attr("y", (d) => yScale(d.nights))
+        .attr("width", xScale.bandwidth())
+        .attr("height", (d) => height - yScale(d.nights))
+        .attr("fill", "steelblue");
+
+    // Dodajte osi
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(xScale));
+
+    svg.append("g")
+        .call(d3.axisLeft(yScale));
+
+</script>
+
+</body>
+</html>

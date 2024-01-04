@@ -25,9 +25,24 @@
 
       <div id="touristNavigation">
         <h2>Turizem</h2>
+        Uredi seznam držav:
+          <div style="margin-top: 10px;">
+            <input type="radio" name="sort" id="sortByName" value="name" checked>
+            <label for="sortByName">po imenu države</label><br>
+        
+            <input type="radio" name="sort" id="sortByNights" value="nights">
+            <label for="sortByNights">po številu prenočitev</label><br>
+        
+            <input type="radio" name="sort" id="sortByArrivals" value="arrivals">
+            <label for="sortByArrivals">po številu turistov</label><br>
+        
+            <input type="radio" name="sort" id="sortByAvgNights" value="avgNights">
+            <label for="sortByAvgNights">po trajanju dopusta</label><br>
+        </div>
         <ul>
           <li>Izberite državo:
             <select id="selectCountryData" style="width: 100%; font-size: 16px; margin-top: 10px;"></select>
+            
           </li>
         </ul>
         <p id="statistics"></p>
@@ -46,10 +61,50 @@
       </div>
     </nav>
     
-    <div class="main-content">
+    <div class="main-content" style="text-align: center;">
       <div id="line-chart"></div>
-      <!--<svg id="pie-chart"></svg>-->
+      <div id="slideshow-container">
+        <div class="mySlides">
+          <p>V zadnjih 3 letih je v Občini Tržič prespalo kar 30767 turistov iz več kot 50 različnih držav.</p>
+        </div>
+        <div class="mySlides">
+          <p>V povprečju turist v Občini Tržič preživi 4 dni.</p>
+        </div>
+        <div class="mySlides">
+          <p>Tujih turistov je 2x več kot domačih, število prenočitev tujih turistov pa kar skoraj 3x več.</p>
+        </div>
+        <div class="mySlides">
+          <p>Največ prenočitev v Občini Tržič je bilo prav iz Slovenije, in sicer kar 22 121 prenočitev.</p>
+        </div>
+        <div class="mySlides">
+          <p>Trend prihdov in prenočitev domačih turistov pada, medtem ko pri tujih turistih vsako leto narašča.</p>
+        </div>
+        <div class="mySlides">
+          <p>Tretjina vseh turistov prihaja iz Slovenije (10508 turistov), sledijo ji Nemčija (4739 turistov), Nizozemska (2215 turistov) in Češka (1987 turistov).</p>
+        </div>
+        <div class="mySlides">
+          <p>Najmanj turistov prihaja iz držav Ciper, Islandija, Črba Gora.</p>
+        </div>
+        <div class="mySlides">
+          <p>Decembra 2020 je v Občini Tržič zapadlo kar 316.5 mm padavin, kar je največ v zadnjih 3 letih.</p>
+
     </div>
+    <script>
+      var slideIndex = 0;
+  
+      function showSlides() {
+        var i;
+        var slides = document.getElementsByClassName("mySlides");
+        for (i = 0; i < slides.length; i++) {
+          slides[i].style.display = "none";
+        }
+        slideIndex++;
+        if (slideIndex > slides.length) { slideIndex = 1 }
+        slides[slideIndex - 1].style.display = "block";
+        setTimeout(showSlides, 10000); // Spremenite 2000 na želeno časovno zamik
+      }
+      showSlides();
+    </script>
 
   </div>
 </body>

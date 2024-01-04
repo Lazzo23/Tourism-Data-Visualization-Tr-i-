@@ -1,3 +1,4 @@
+let Data = 0;
 document.addEventListener('DOMContentLoaded', function () {
     // Colours
     var colorNights = "rgb(90, 170, 78)";
@@ -7,8 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Line chart dimensions and margins
     var margin = {top: 50, right: 100, bottom: 30, left: 100};
-    var width = 1150 - margin.left - margin.right;
-    var height = 600 - margin.top - margin.bottom;
+    var width = 1250 - margin.left - margin.right;
+    var height = 700 - margin.top - margin.bottom;
     
     // Append the svg object to the body of the page
     var svg = d3.select("#line-chart")
@@ -81,23 +82,49 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Calculate basic statistics
-    function calculateStatistics(Data, country) {
+    function calculateStatistics(Data) {
+        var dict = Data.reduce(function(acc, curr) {
+            var country = curr.country;
+            if (!acc[country]) {
+                acc[country] = { allArrivals: 0, allNights: 0, avgNights: 0};
+            }
+            
+            acc[country].allArrivals += curr.arrivals;
+            acc[country].allNights += curr.nights;
+            if (acc[country].allNights == 0)
+                acc[country].avgNights = 0;
+            else
+                acc[country].avgNights = Math.round((acc[country].allNights) * 100 / acc[country].allArrivals) / 100;
+            
+            return acc;
+        }, {});
+        
+        
+        var arr = Object.keys(dict).map(function(country) {
+            return { country: country, allArrivals: dict[country].allArrivals, allNights: dict[country].allNights, avgNights: dict[country].avgNights};
+        });
+
+        return arr;
+    }
+
+    // Calculate basic tourism statistics
+    function calculateTourismStatistics(Data, country) {
         const countryData = Data.filter(d => d.country==country)
         var allNights = countryData.reduce((accumulator, d) => accumulator + d.nights, 0);
         var allArrivals = countryData.reduce((accumulator, d) => accumulator + d.arrivals, 0);
-        var avgNights = Math.round((allNights / allArrivals) * 100) / 100;
+        var timeSpent = (Math.round((allNights / allArrivals) * 100) / 100) + 1;
         var bestMonth = countryData.reduce(function(prev, current) {
         return (prev && prev.nights > current.nights) ? prev : current
         }); 
         
         statistics.innerHTML = 
-        "<b>Skupno število prenočitev</b>: " + allNights + "<br>" +
-        "<b>Skupno število turistov</b>: " + allArrivals + "<br>" +
-        "<b>Povprečno število prenočitev na turista</b>: " + avgNights + "<br>" +
+        "<b>Število prenočitev</b>: " + allNights + "<br>" +
+        "<b>Število turistov</b>: " + allArrivals + "<br>" +
+        "<b>Trajanje dopusta</b>: " + timeSpent + " dni<br>" +
         "<b>Najboljši mesec</b>: " + prepareDate(bestMonth.month) + "<br>(" + bestMonth.nights + " prenočitev in " + bestMonth.arrivals + " turistov)";
     }
 
-    // Calculate basic statistics
+    // Calculate basic weather statistics
     function calculateWeatherStatistics(weatherData, type) {
         const typeWeather = weatherData.map(o => o[type]);
         var max = Math.max(...typeWeather);
@@ -122,19 +149,83 @@ document.addEventListener('DOMContentLoaded', function () {
           
             let Data = prepareData(touristData);
             var listOfCountries = d3.map(Data, function(d){return(d.country)}).keys();
-            console.log(Data);
+
             prepareWeatherData(weatherData);
             var listOfWeatherData = Object.keys(weatherData[0]).slice(3);
             listOfCountries.splice(3, listOfCountries.length - 3, ...listOfCountries.slice(3, listOfCountries.length).sort());
-            
+
+            var arr = calculateStatistics(Data);
+
             // Add countries to the button
             d3.select("#selectCountryData")
                 .selectAll('myOptions')
                 .data(listOfCountries)
                 .enter()
                 .append('option')
-                .text(function (d) { if(d == "Država - SKUPAJ") return "SKUPAJ"; else return d;})           // text showed in the menu
-                .attr("value", function (d) { return d; })  // corresponding value returned by the button
+                .text(function (d) { 
+                    if(d == "Država - SKUPAJ") return "SKUPAJ"; else return d;})
+                .attr("value", function (d) { return d; })  
+
+            function sortCountryMenu() {
+
+                d3.select("#selectCountryData").html(null);
+
+                var sort = document.querySelector('input[name="sort"]:checked').value;
+
+                var newListOfCountries = {};
+            
+                switch (sort) {
+
+                    case "name":
+                        newListOfCountries = listOfCountries;
+                        break;
+
+                    case "nights":
+                        arr.sort(function(a, b) {
+                            return b.allNights - a.allNights;
+                        });
+                        newListOfCountries = arr.map(function(o) {
+                            return o.country;
+                          });
+                        break;
+
+                    case "arrivals":
+                        arr.sort(function(a, b) {
+                            return b.allArrivals - a.allArrivals;
+                        });
+                        newListOfCountries = arr.map(function(o) {
+                            return o.country;
+                            });
+                        break;
+                    
+                    case "avgNights":
+                        arr.sort(function(a, b) {
+                            return b.avgNights - a.avgNights;
+                        });
+                        newListOfCountries = arr.map(function(o) {
+                            return o.country;
+                            });
+                        break;
+                }
+                d3.select("#selectCountryData")
+                .selectAll('myOptions')
+                .data(newListOfCountries)
+                .enter()
+                .append('option')
+                .text(function (d) { 
+                    if(d == "Država - SKUPAJ") return "SKUPAJ"; else return d;})
+                .attr("value", function (d) { return d; });
+                updateTouristData(newListOfCountries[0])
+            }
+
+            // Poslušanje sprememb na radio gumbov
+            var radioGumbi = document.querySelectorAll('input[name="sort"]');
+            radioGumbi.forEach(function(gumb) {
+            gumb.addEventListener('change', sortCountryMenu);
+            });
+
+            
+            
 
             // Add weather data to the button
             d3.select("#selectWeatherData")
@@ -166,13 +257,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 .call(d3.axisLeft(y))
                 .attr("class", "yTouristAxis");
 
-            svg.append("text")
+            var y1label = svg.append("text")
                 .attr("transform", "rotate(-90)")
-                .attr("y", 0 - margin.left + 40)
-                .attr("x",0 - (height / 2))
+                .attr("y", 0 - margin.left + 30)
+                .attr("x",0 - (height / 2) )
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
-                .text("Število prenočitev in turistov");    
+                .text("Število prenočitev in turistov (SKUPAJ)");    
         
             
         
@@ -187,13 +278,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 .attr("transform", "translate(" + width + ", 0)")
                 .call(d3.axisRight(yWeather));
 
-            svg.append("text")
+            var y2label = svg.append("text")
                 .attr("transform", "rotate(-90)")
-                .attr("y", width - margin.right + 130)
+                .attr("y", width - margin.right + 140)
                 .attr("x",0 - (height / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
-                .text("Vremenski podatki");
+                .text(listOfWeatherData[0]);
             
             var weatherValueBackground = svg.append("rect")
                 .attr("class", "weather-value-background")
@@ -390,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
                 
             // Calculate basic statistics
-            calculateStatistics(Data, listOfCountries[0]);
+            calculateTourismStatistics(Data, listOfCountries[0]);
             calculateWeatherStatistics(weatherData, listOfWeatherData[0]);
 
             // Legend
@@ -409,6 +500,10 @@ document.addEventListener('DOMContentLoaded', function () {
       
             // Update tourist graph
             function updateTouristData(selectedCountry) {
+                var label = selectedCountry;
+                if (selectedCountry == "Država - SKUPAJ")
+                    label = "SKUPAJ"
+                y1label.text("Število prenočitev in turistov (" + label + ")")
         
                 // Create new data with the selection
                 var dataFilter = Data.filter(function(d){return d.country == selectedCountry})
@@ -448,11 +543,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     .call(d3.axisLeft(y));
                 
                 // Calculating new statistics based on new data
-                calculateStatistics(Data, selectedCountry);
+                calculateTourismStatistics(Data, selectedCountry);
             }
       
             // Update weather graph
             function updateWeatherData(selectedWeather) {
+                y2label.text(selectedWeather);
                 var barsData = weatherData.map(function(d) {return {valid: d.valid, value: d[selectedWeather]};});
                 var bars = svg.selectAll(".barWeather").data(barsData);
             
@@ -517,7 +613,13 @@ document.addEventListener('DOMContentLoaded', function () {
             d3.select("#selectWeatherData").on("change", function(d) {
                 updateWeatherData(d3.select(this).property("value"))
             });
-            /*
+            
+      
+
+
+
+
+
 
             // PORAZDELITEV
             var sumByCountry = {};
@@ -526,11 +628,7 @@ document.addEventListener('DOMContentLoaded', function () {
             Data.forEach(function(item) {
                 var country = item.country;
                 var nights = item.nights;
-
-                var notCountry = new Set(["Država - SKUPAJ", "DOMAČI", "TUJI"]);
-                
-                // Ne štej držav v notCountry
-                if (notCountry.has(country)) return;
+                var arrivals = item.arrivals
             
                 // Če države še ni v objektu, jo dodamo, sicer seštejemo vrednost
                 sumByCountry[country] = (sumByCountry[country] || 0) + nights;
@@ -543,52 +641,59 @@ document.addEventListener('DOMContentLoaded', function () {
             dataArray.sort(function(a, b) {
                 return b.nights - a.nights; // padajoče sortiranje, za naraščajoče zamenjajte b in a
             });
-            dataArray = dataArray.slice(0,5);
-            console.log(dataArray);
+            dataArray = dataArray.slice(0,45);
 
-            var width2 = 400;
-            var height2 = 400;
-        
-            // Radij pita
-            var radius = Math.min(width2, height2) / 2;
-        
-            // Barvna lestvica
-            var color = d3.scaleOrdinal(d3.schemeCategory10);
-        
-            // Ustvarjanje SVG elementa
-            var svg2 = d3.select("#pie-chart")
-              .attr("width", width2)
-              .attr("height", height2)
-              .append("g")
-              .attr("transform", "translate(" + width2 / 2 + "," + height2 / 2 + ")");
-        
-            // Podatki
-            var x = Object.keys(sumByCountry).map(function(key){
-                return sumByCountry[key];
-            });; // Prilagodite glede na vaše potrebe
-        
-            // Ustvarjanje pita diagrama
-            var pie = d3.pie();
-            var arc = d3.arc().outerRadius(radius).innerRadius(0);
-        
-            // Dodajanje pita
-            svg2.selectAll("path")
-              .data(pie(x))
-              .enter()
-              .append("path")
-              .attr("d", arc)
-              .attr("fill", function(d, i) { return color(i); });
-        
-            // Dodajanje besedila
-            svg2.selectAll("text")
-              .data(pie(x))
-              .enter()
-              .append("text")
-              .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
-              .attr("text-anchor", "middle")
-              .text(function(d) { return d.data; });
-   
-*/
+  
+  // Objekt za shranjevanje seštetih vrednosti
+  var rezultati = Data.reduce(function(acc, trenutni) {
+    var drzava = trenutni.country;
+  
+    // Če država še ni v objektu, jo dodajte
+    if (!acc[drzava]) {
+      acc[drzava] = { arrivals: 0, nights: 0 };
+    }
+  
+    // Seštevanje vrednosti
+    acc[drzava].arrivals += trenutni.arrivals;
+    acc[drzava].nights += trenutni.nights;
+  
+    return acc;
+  }, {});
+  
+  // Pretvorba objekta v tabelo, če želite
+  var rezultatiTabela = Object.keys(rezultati).map(function(drzava) {
+    return { country: drzava, arrivals: rezultati[drzava].arrivals, nights: rezultati[drzava].nights };
+  });
+  // Sortiranje arraya po vrednostih
+  rezultatiTabela.sort(function(a, b) {
+    return b.arrivals - a.arrivals; // padajoče sortiranje, za naraščajoče zamenjajte b in a
+});
+
+  // Izhod
+
+  // Funkcija za sortiranje seznama
+
+  
+
         });
+    });
+
+    
+});
+
+// Pridobi radio gumbe
+var radioButtons = document.querySelectorAll('input[type="radio"]');
+
+// Poslušaj dogodek 'change' na vsakem radio gumbu
+radioButtons.forEach(function (radioButton) {
+    radioButton.addEventListener('change', function () {
+        // Dodaj razred 'black-border' za sekundo, nato ga odstrani
+        var selectCountry = document.getElementById('selectCountryData');
+        selectCountry.classList.add('black-border');
+
+        // Po eni sekundi odstrani razred 'black-border'
+        setTimeout(function () {
+            selectCountry.classList.remove('black-border');
+        }, 500);
     });
 });

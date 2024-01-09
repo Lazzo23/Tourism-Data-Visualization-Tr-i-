@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Line chart dimensions and margins
     var margin = {top: 50, right: 100, bottom: 30, left: 100};
-    var width = 1250 - margin.left - margin.right;
-    var height = 700 - margin.top - margin.bottom;
+    var width = 1400 - margin.left - margin.right;
+    var height = 750 - margin.top - margin.bottom;
     
     // Append the svg object to the body of the page
     var svg = d3.select("#line-chart")
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var dict = Data.reduce(function(acc, curr) {
             var country = curr.country;
             if (!acc[country]) {
-                acc[country] = { allArrivals: 0, allNights: 0, avgNights: 0};
+                acc[country] = { allArrivals: 0, allNights: 0, avgNights: 0, normalizedAvgNight: 0, normalizedNights: 0, score: 0};
             }
             
             acc[country].allArrivals += curr.arrivals;
@@ -94,11 +94,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (acc[country].allNights == 0)
                 acc[country].avgNights = 0;
             else
-                acc[country].avgNights = Math.round((acc[country].allNights) * 100 / acc[country].allArrivals) / 100;
+                acc[country].avgNights = ((acc[country].allNights / acc[country].allArrivals) + 1).toFixed(2);
             
             return acc;
         }, {});
-        
         
         var arr = Object.keys(dict).map(function(country) {
             return { country: country, allArrivals: dict[country].allArrivals, allNights: dict[country].allNights, avgNights: dict[country].avgNights};
@@ -112,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const countryData = Data.filter(d => d.country==country)
         var allNights = countryData.reduce((accumulator, d) => accumulator + d.nights, 0);
         var allArrivals = countryData.reduce((accumulator, d) => accumulator + d.arrivals, 0);
-        var timeSpent = (Math.round((allNights / allArrivals) * 100) / 100) + 1;
+        var timeSpent = ((allNights / allArrivals) + 1).toFixed(2);
         var bestMonth = countryData.reduce(function(prev, current) {
         return (prev && prev.nights > current.nights) ? prev : current
         }); 
@@ -121,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "<b>Število prenočitev</b>: " + allNights + "<br>" +
         "<b>Število turistov</b>: " + allArrivals + "<br>" +
         "<b>Trajanje dopusta</b>: " + timeSpent + " dni<br>" +
-        "<b>Najboljši mesec</b>: " + prepareDate(bestMonth.month) + "<br>(" + bestMonth.nights + " prenočitev in " + bestMonth.arrivals + " turistov)";
+        "<b>Najboljši mesec</b>: " + prepareDate(bestMonth.month) + "<br>";
     }
 
     // Calculate basic weather statistics

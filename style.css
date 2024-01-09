@@ -20,7 +20,7 @@ body {
 }
 
 .navigation {
-    width: 16%;
+    width: 300px;
 }
 
 #logo {
@@ -54,8 +54,19 @@ body {
     padding-top:10px;
 }
 
+#touristNavigationStatistics {
+    background-color: rgba(90, 170, 78, 0.4);
+    padding: 20px;
+    padding-top:10px;
+}
+
 #weatherNavigation {
     background-color: rgb(102, 179, 204, 0.5);
+    padding: 20px;
+    padding-top:10px;
+}
+#weatherNavigationStatistics {
+    background-color: rgb(102, 179, 204, 0.4);
     padding: 20px;
     padding-top:10px;
 }
@@ -77,20 +88,13 @@ body {
 }
 
 .main-content {
-    width: 70%; /* Nastavi širino glavne vsebine */
+    width: 75%; /* Nastavi širino glavne vsebine */
     padding: 20px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    height: 862px;
+    height: 881px;
 }
 
-#statistics {
-    line-height: 25px;
-}
-
-#weatherStatistics {
-    line-height: 25px;
-}
 
 #slideshow-container {
     padding-left: 200px;
@@ -128,4 +132,7 @@ input[type="radio"]:checked + label{
   }
 input[type="radio"]:checked{
     accent-color: black;
+}
+.radio {
+    gap: 1.2px;
 }

@@ -16,7 +16,7 @@
       <div id="header">
         <img id="logo" src="img/logo.png" alt="Logo">
         <h1 id="title">42rizem
-          <span style="font-size:14px; font-weight: normal;"> Miha Lazić, Matija Bajt</span>
+          <span style="font-size:14px; font-weight: normal;"> <br>Miha Lazić, Matija Bajt</span>
         </h1>
       </div>
       <div id="subtitle">
@@ -26,17 +26,17 @@
       <div id="touristNavigation">
         <h2>Turizem</h2>
         Uredi seznam držav:
-          <div style="margin-top: 10px;">
-            <input type="radio" name="sort" id="sortByName" value="name" checked>
+          <div style="margin-top: 10px; line-height: normal;">
+            <input type="radio" name="sort" class="radio" value="name" checked>
             <label for="sortByName">po imenu države</label><br>
         
-            <input type="radio" name="sort" id="sortByNights" value="nights">
+            <input type="radio" name="sort" class="radio" value="nights">
             <label for="sortByNights">po številu prenočitev</label><br>
         
-            <input type="radio" name="sort" id="sortByArrivals" value="arrivals">
+            <input type="radio" name="sort" class="radio" value="arrivals">
             <label for="sortByArrivals">po številu turistov</label><br>
         
-            <input type="radio" name="sort" id="sortByAvgNights" value="avgNights">
+            <input type="radio" name="sort" class="radio" value="avgNights">
             <label for="sortByAvgNights">po trajanju dopusta</label><br>
         </div>
         <ul>
@@ -45,6 +45,8 @@
             
           </li>
         </ul>
+      </div>
+      <div id="touristNavigationStatistics">
         <p id="statistics"></p>
         <small>Vir: Statistični urad Republike Slovenije</small>
       </div>
@@ -55,7 +57,8 @@
           <li>Izberite vremenske podatke:
             <select id="selectWeatherData" style="width: 100%; font-size: 16px; margin-top: 10px;"></select>
           </li>
-        </ul>
+      </div>
+      <div id="weatherNavigationStatistics">
         <p id="weatherStatistics"></p>
         <small>Vir: ARSO Meteo Arhiv</small>
       </div>
@@ -68,22 +71,34 @@
           <p>V zadnjih 3 letih je v Občini Tržič prespalo kar 30767 turistov iz več kot 50 različnih držav.</p>
         </div>
         <div class="mySlides">
-          <p>V povprečju turist v Občini Tržič preživi 4 dni.</p>
+          <p>V povprečju turist v Občini Tržič preživi 3.63 dni.</p>
         </div>
         <div class="mySlides">
-          <p>Tujih turistov je 2x več kot domačih, število prenočitev tujih turistov pa kar skoraj 3x več.</p>
+          <p>Tujih turistov je 2x več kot domačih, število prenočitev tujih turistov pa kar 3x več.</p>
         </div>
         <div class="mySlides">
-          <p>Največ prenočitev v Občini Tržič je bilo prav iz Slovenije, in sicer kar 22 121 prenočitev.</p>
+          <p>Tuji turisti povprečno preživijo dan več v Občini Tržič kot slovenski turisti.</p>
         </div>
         <div class="mySlides">
-          <p>Trend prihdov in prenočitev domačih turistov pada, medtem ko pri tujih turistih vsako leto narašča.</p>
+          <p>Največ prenočitev v Občini Tržič je bilo prav iz Slovenije, in sicer kar 22121 prenočitev.</p>
+        </div>
+        <div class="mySlides">
+          <p>Trend prihodov in prenočitev domačih turistov pada, medtem ko pri tujih turistih vsako leto narašča.</p>
         </div>
         <div class="mySlides">
           <p>Tretjina vseh turistov prihaja iz Slovenije (10508 turistov), sledijo ji Nemčija (4739 turistov), Nizozemska (2215 turistov) in Češka (1987 turistov).</p>
         </div>
         <div class="mySlides">
-          <p>Najmanj turistov prihaja iz držav Ciper, Islandija, Črba Gora.</p>
+          <p>Najmanj turistov prihaja iz Cipra, Islandije in Črne Gore.</p>
+        </div>
+        <div class="mySlides">
+          <p>Največ časa v Občini Tržič preživijo Japonci (7.56 dni), sledijo ji Portugalci (6.95 dni), Finci (6.64 dni) in Ciprčani  (6 dni).</p>
+        </div>
+        <div class="mySlides">
+          <p>Največ prenočitev jd bilo  avgusta 2022, ko jih je bilo v Občini Tržič kar 7103.</p>
+        </div>
+        <div class="mySlides">
+          <p>Občina Tržič je v veliki meri poletna destinacija z največ prenočitvami junija, julija in avgusta.</p>
         </div>
         <div class="mySlides">
           <p>Decembra 2020 je v Občini Tržič zapadlo kar 316.5 mm padavin, kar je največ v zadnjih 3 letih.</p>
